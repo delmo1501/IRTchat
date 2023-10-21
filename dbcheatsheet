@@ -1,0 +1,11 @@
+Start an interactive SQL shell with:
+
+   turso db shell genuine-savant
+
+To see information about the database, including a connection URL, run:
+
+   turso db show genuine-savant
+
+To get an authentication token for the database, run:
+
+   turso db tokens create genuine-savant
