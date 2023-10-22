@@ -41,6 +41,7 @@ io.on('connection', (socket) => {
         try {
             result = await db.execute({
                 sql: 'INSERT INTO messages (content) VALUES (:msg)',
+                // why we are not using `${msg}`? Like this we prevent random injections from the user
                 args: { msg }
             })
         } catch (e) {
