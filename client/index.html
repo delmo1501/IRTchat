@@ -8,7 +8,13 @@
     <script type="module">
         import { io } from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js'
         // surprise, we can import in vanillajs, a net package to use it
-        const socket = io()
+        const socket = io({
+            auth: { // this is gonna be in EACH message and petition
+                serverOffSet: 0,
+                token: '123',
+                username: 'brunodel'
+            }
+        })
 
         const form = document.getElementById('form')
         const input = document.getElementById('input')
@@ -17,6 +23,7 @@
         socket.on('chat message', (msg) => {
             const item = `<li>${msg}</li>`
             messages.insertAdjacentHTML('beforeend', item)
+            socket.auth.serverOffSet = serverOffSet
         })
  
         form.addEventListener('submit', (e) => {
