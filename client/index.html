@@ -11,8 +11,7 @@
         const socket = io({
             auth: { // this is gonna be in EACH message and petition
                 serverOffSet: 0,
-                token: '123',
-                username: 'brunodel'
+                username: getUsername()
             }
         })
 
@@ -20,8 +19,23 @@
         const input = document.getElementById('input')
         const messages = document.getElementById('messages')
 
-        socket.on('chat message', (msg) => {
-            const item = `<li>${msg}</li>`
+        const getUsername = async () => {
+            const username = localStorage.getItem('username')
+            if (username) {
+                console.log(`user existed ${username}`)
+            }
+            const res = await fetch('https://random-data-api.com/api/users/random_user') //lets use random data to get users
+            const { username: randomUsername } = await res.json()
+
+            localStorage.setItem('username', randomUsername)
+            return randomUsername
+        }
+
+        socket.on('chat message', (msg, serverOffSet, username) => {
+            const item = `<li>
+                <p>${msg}</p>
+                <small>${username}</small>
+                </li>`
             messages.insertAdjacentHTML('beforeend', item)
             socket.auth.serverOffSet = serverOffSet
         })
