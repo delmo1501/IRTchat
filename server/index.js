@@ -7,14 +7,13 @@ import { Server } from 'socket.io'
 import { createServer } from 'http'
 
 dotenv.config()
+
 const port = process.env.PORT ?? 3000
 
 const app = express ()
 const server = createServer(app)
 const io = new Server(server, {
-    connectionStateRecovery: {
-        maxDisconnectionDuration: {}
-    }
+    connectionStateRecovery: {}
 })
 
 const db = createClient({
@@ -40,8 +39,8 @@ io.on('connection', async (socket) => {
     socket.on('chat message', async (msg) => {
         let result
         let username = socket.handshake.auth.username ?? 'anonymous'
+        console.log('jejeje', { username })
         try {
-
             result = await db.execute({
                 sql: 'INSERT INTO messages (content, user) VALUES (:msg, :username)',
                 // why we are not using `${msg}`? Like this we prevent random injections from the user
@@ -62,7 +61,7 @@ io.on('connection', async (socket) => {
             })
 
             results.rows.forEach(row => {
-                socket.emit('chat message', row.content, row.id.toString(), row.username)
+                socket.emit('chat message', row.content, row.id.toString(), row.user)
             })
         } catch (error) {
             console.error(error)

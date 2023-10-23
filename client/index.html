@@ -7,6 +7,23 @@
 
     <script type="module">
         import { io } from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js'
+
+        const getUsername = async () => {
+            const username = localStorage.getItem('username')
+            console.log('1', username)
+            if (username) {
+                console.log('2', username)
+                console.log(`user existed ${username}`)
+                return username
+            }
+
+            const res = await fetch('https://random-data-api.com/api/v2/users?size=2&is_xml=true') //lets use random data to get users
+            console.log('3',res)
+            const { username: randomUsername } = await res.json()
+
+            localStorage.setItem('username', randomUsername)
+            return randomUsername
+        }
         // surprise, we can import in vanillajs, a net package to use it
         const socket = io({
             auth: { // this is gonna be in EACH message and petition
@@ -19,25 +36,15 @@
         const input = document.getElementById('input')
         const messages = document.getElementById('messages')
 
-        const getUsername = async () => {
-            const username = localStorage.getItem('username')
-            if (username) {
-                console.log(`user existed ${username}`)
-            }
-            const res = await fetch('https://random-data-api.com/api/users/random_user') //lets use random data to get users
-            const { username: randomUsername } = await res.json()
-
-            localStorage.setItem('username', randomUsername)
-            return randomUsername
-        }
-
         socket.on('chat message', (msg, serverOffSet, username) => {
             const item = `<li>
                 <p>${msg}</p>
                 <small>${username}</small>
-                </li>`
+            </li>`
             messages.insertAdjacentHTML('beforeend', item)
             socket.auth.serverOffSet = serverOffSet
+            //lets scroll to the bottom so we are not stuck in the message
+            messages.scrollTop = messages.scrollHeight
         })
  
         form.addEventListener('submit', (e) => {
@@ -102,6 +109,10 @@
             border-radius: 4px;
         }
         #messages {
+            overflow-y: scroll;
+            height: 100%;
+            scroll-behavior: smooth;
+            padding-bottom: 48px;
             list-style-type: none;
             margin: 0;
             padding: 0;
