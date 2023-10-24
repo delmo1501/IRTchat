@@ -37,6 +37,7 @@ io.on('connection', async (socket) => {
     })
 
     socket.on('chat message', async (msg) => {
+        console.log('entered');
         let result
         let username = socket.handshake.auth.username ?? 'anonymous'
         console.log('jejeje', { username })
